@@ -29,8 +29,9 @@ ZONE_COLORS = {
 HZ_OPTIMISTIC_FILL = "#1b3a2a"
 HZ_CONSERVATIVE_FILL = "#2c6a45"
 
-FILTER_HZ = "Habitable zone (optimistic)"
+FILTER_HZ = "Habitable zone"
 FILTER_CONSERVATIVE = "Conservative habitable zone"
+FILTER_OPTIMISTIC = "Optimistic habitable zone"
 FILTER_ALL = "All small planets"
 
 # (column id, heading, width, anchor, value getter, display formatter)
@@ -136,7 +137,7 @@ class TerraBrowser(tk.Tk):
         self.zone_var = tk.StringVar(value=FILTER_HZ)
         ttk.Label(bar, text="Show").pack(side="left")
         zone_box = ttk.Combobox(bar, textvariable=self.zone_var, state="readonly", width=27,
-                                values=[FILTER_HZ, FILTER_CONSERVATIVE, FILTER_ALL])
+                                values=[FILTER_HZ, FILTER_CONSERVATIVE, FILTER_OPTIMISTIC, FILTER_ALL])
         zone_box.pack(side="left", padx=(6, 16))
         zone_box.bind("<<ComboboxSelected>>", lambda _: self.refresh_table())
 
@@ -273,6 +274,8 @@ class TerraBrowser(tk.Tk):
             if zone_filter == FILTER_HZ and not p.in_habitable_zone:
                 continue
             if zone_filter == FILTER_CONSERVATIVE and p.zone != ZONE_CONSERVATIVE:
+                continue
+            if zone_filter == FILTER_OPTIMISTIC and p.zone != ZONE_OPTIMISTIC:
                 continue
             if method != "Any method" and p.method != method:
                 continue
