@@ -1,9 +1,11 @@
 """Tkinter GUI for browsing potentially habitable exoplanets."""
 
 import queue
+import sys
 import threading
 import tkinter as tk
 import webbrowser
+from pathlib import Path
 from tkinter import ttk
 
 from . import api
@@ -50,6 +52,8 @@ COLUMNS = [
 ]
 ESTIMATED_FIELD = {"radius": "radius", "insol": "insolation", "teq": "eq_temp"}
 
+ASSETS = Path(__file__).with_name("assets")
+
 
 def star_color(teff: float | None) -> str:
     if teff is None:
@@ -73,6 +77,7 @@ class TerraBrowser(tk.Tk):
         self.geometry("1400x820")
         self.minsize(1100, 640)
         self.configure(background=BG)
+        self._set_icon()
 
         self.planets: list[Planet] = []
         self.by_iid: dict[str, Planet] = {}
@@ -88,6 +93,20 @@ class TerraBrowser(tk.Tk):
         self.load(force_refresh=False)
 
     # ---- layout -------------------------------------------------------------------------------
+
+    def _set_icon(self) -> None:
+        """Use the 🪐 glyph from the title bar as the window and taskbar icon."""
+        try:
+            if sys.platform == "win32":
+                import ctypes
+                # Own taskbar identity, so Windows shows this icon instead of pythonw's
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("Terrabrowser")
+                self.iconbitmap(default=str(ASSETS / "icon.ico"))
+            else:
+                self._icon_image = tk.PhotoImage(file=str(ASSETS / "icon.png"))
+                self.iconphoto(True, self._icon_image)
+        except (tk.TclError, OSError, AttributeError):
+            pass
 
     def _setup_style(self) -> None:
         style = ttk.Style(self)
