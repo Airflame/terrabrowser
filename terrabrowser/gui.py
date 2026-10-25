@@ -122,7 +122,9 @@ class TerraBrowser(tk.Tk):
         self.option_add("*TCombobox*Listbox.foreground", FG)
         self.option_add("*TCombobox*Listbox.selectBackground", SELECT)
         self.option_add("*TCombobox*Listbox.selectForeground", FG)
-        style.configure("Vertical.TScrollbar", background=PANEL_HI, arrowcolor=MUTED)
+        style.configure("Vertical.TScrollbar", background=BORDER, troughcolor=BG, arrowcolor=FG,
+                        bordercolor=BG, lightcolor=BORDER, darkcolor=BORDER, arrowsize=16)
+        style.map("Vertical.TScrollbar", background=[("pressed", ACCENT), ("active", "#3a4870")])
 
     def _build_toolbar(self) -> None:
         bar = ttk.Frame(self, padding=(14, 12, 14, 8))
@@ -169,8 +171,8 @@ class TerraBrowser(tk.Tk):
             self.tree.tag_configure(zone, foreground=color)
         scroll = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scroll.set)
+        scroll.pack(side="right", fill="y")  # packed first so the wide tree can't squeeze it out
         self.tree.pack(side="left", fill="both", expand=True)
-        scroll.pack(side="right", fill="y")
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
         body.add(table_frame, weight=3)
 
